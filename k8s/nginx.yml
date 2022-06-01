@@ -1,0 +1,70 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: netpong
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: paulbouwer/hello-kubernetes:1.10
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+#         readinessProbe:
+#           httpGet:
+#             scheme: HTTP
+#             path: /index.html
+#             port: 80
+#           initialDelaySeconds: 10
+#           periodSeconds: 5
+#         volumeMounts:
+#             - name: nginx-public
+#               mountPath: /usr/share/nginx/html/
+#       volumes:
+#       - name: nginx-public
+#         configMap:
+#           name: nginx-index-html-configmap
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: netpong
+spec:
+  selector:
+    app: nginx
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 8080
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  namespace: netpong
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: "/*"
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: nginx-service
+            port:
+              number: 80
