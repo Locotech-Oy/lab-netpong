@@ -9,7 +9,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-deployment
-  #namespace: netpong
+  namespace: netpong
 spec:
   selector:
     matchLabels:
@@ -35,7 +35,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nginx-service
-  #namespace: netpong
+  namespace: netpong
 spec:
   selector:
     app: nginx
@@ -49,7 +49,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nginx-ingress
-  #namespace: netpong
+  namespace: netpong
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
