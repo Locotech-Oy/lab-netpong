@@ -29,20 +29,6 @@ spec:
         env:
         - name: RENDER_PATH_PREFIX
           value: /hello
-#         readinessProbe:
-#           httpGet:
-#             scheme: HTTP
-#             path: /index.html
-#             port: 80
-#           initialDelaySeconds: 10
-#           periodSeconds: 5
-#         volumeMounts:
-#             - name: nginx-public
-#               mountPath: /usr/share/nginx/html/
-#       volumes:
-#       - name: nginx-public
-#         configMap:
-#           name: nginx-index-html-configmap
 
 ---
 apiVersion: v1
