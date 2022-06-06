@@ -66,6 +66,16 @@ module "gke" {
       min_count                 = 1
       max_count                 = 3
       disk_size_gb              = 30
+      labels = {
+        env = var.project_id
+      }
     },
   ]
+}
+
+resource "google_container_cluster" "example" {
+  name               = var.name
+  location           = var.location
+  initial_node_count = 1
+  project            = data.google_project.project.name
 }
