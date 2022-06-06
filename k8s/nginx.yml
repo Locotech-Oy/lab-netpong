@@ -24,6 +24,11 @@ spec:
       - name: nginx
         image: paulbouwer/hello-kubernetes:1.10
         imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            cpu: 500m
         ports:
         - containerPort: 8080
         env:
