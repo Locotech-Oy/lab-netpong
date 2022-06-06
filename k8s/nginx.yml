@@ -1,4 +1,10 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: netpong
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,22 +24,16 @@ spec:
       - name: nginx
         image: paulbouwer/hello-kubernetes:1.10
         imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            cpu: 500m
         ports:
         - containerPort: 8080
-#         readinessProbe:
-#           httpGet:
-#             scheme: HTTP
-#             path: /index.html
-#             port: 80
-#           initialDelaySeconds: 10
-#           periodSeconds: 5
-#         volumeMounts:
-#             - name: nginx-public
-#               mountPath: /usr/share/nginx/html/
-#       volumes:
-#       - name: nginx-public
-#         configMap:
-#           name: nginx-index-html-configmap
+        env:
+        - name: RENDER_PATH_PREFIX
+          value: /hello
 
 ---
 apiVersion: v1
@@ -56,13 +56,15 @@ metadata:
   name: nginx-ingress
   namespace: netpong
   annotations:
-    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
   - http:
       paths:
-      - path: "/*"
-        pathType: ImplementationSpecific
+      - path: /hello(/|$)(.*)
+        pathType: Prefix
         backend:
           service:
             name: nginx-service

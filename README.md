@@ -30,13 +30,13 @@ terraform apply
 Provide name of project you will host the cluster in. Terraform will spin up a GKE setup and output a kubeconfig file (suffix ```-prod```
  by default)
 
-Go into k8s folder
+To start up a generic nginx-based ingress controller:
 
 ```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/cloud/deploy.yaml
 ```
 
-This will setup an ingress controller, check status with:
+check status with:
 ```
 kubectl get pods -n ingress-nginx
 kubectl get svc -n ingress-nginx
@@ -46,7 +46,7 @@ Check public IP of ingress controller:
 ```
 kubectl get service ingress-nginx-controller --namespace=ingress-nginx
 ```
-once public IP available, create test structures
+once public IP available, go into k8s folder and create test pods using
 
 ```
 kubectl create -f nginx.yml
