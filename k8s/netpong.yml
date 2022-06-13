@@ -1,0 +1,94 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: netpong
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: netpong-service-account
+  namespace: netpong
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: netpong-cluster-role
+  namespace: netpong
+rules:
+  - apiGroups:
+        - ""
+        - apps
+        - autoscaling
+        - batch
+        - extensions
+        - policy
+        - rbac.authorization.k8s.io
+    resources:
+      - pods
+      - componentstatuses
+      - configmaps
+      - daemonsets
+      - deployments
+      - events
+      - endpoints
+      - horizontalpodautoscalers
+      - ingress
+      - jobs
+      - limitranges
+      - namespaces
+      - nodes
+      - pods
+      - persistentvolumes
+      - persistentvolumeclaims
+      - resourcequotas
+      - replicasets
+      - replicationcontrollers
+      - serviceaccounts
+      - services
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: netpong-cluster-role-binding
+subjects:
+- namespace: netpong
+  kind: ServiceAccount
+  name: netpong-service-account
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: netpong-cluster-role
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netpong-deployment
+  namespace: netpong
+spec:
+  selector:
+    matchLabels:
+      app: netpong
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: netpong
+    spec:
+      serviceAccountName: netpong-service-account
+      containers:
+      - name: netpong
+        image: netpong:local
+        imagePullPolicy: IfNotPresent
+        command: ["/go/app"]
+        args: ["--debug=true", "--namespace-prefix=netpong"]
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            cpu: 500m
