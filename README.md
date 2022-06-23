@@ -3,7 +3,7 @@ A small kubernetes based setup that throws some traffic around in random ways. T
 
 ## Working principle
 
-When a pod starts, it will wait for a random nr of ms before attempting to send a packet to one of it's neighbours. Neighbours are determined by looking for other pods in the namespace having a prefix "netpong-" (can be adjusted via flag). From the list of found pods, the current pod will choose one random neighbour and try to send a packet over the internal network. The receiving pod answers with an OK message, increases the numHops counter, then attempts to forward the packet to another neighbour. The pod will only attempt to create a new packet if it hasn't already received a packet from another pod during the time it started to the time it would do it's first sendout.
+When a pod starts, it will wait for a random nr of ms before attempting to send a packet to one of it's neighbours. Neighbours are determined by looking for other pods in the namespace having a prefix "netpong" (can be adjusted via flag). From the list of found pods, the current pod will choose one random neighbour and try to send a packet over the internal network. The receiving pod answers with an OK message, increases the numHops counter, then attempts to forward the packet to another neighbour. The pod will only attempt to create a new packet if it hasn't already received a packet from another pod during the time it started to the time it would do it's first sendout.
 
 Once the packet has been sent and acknowledged by the recipient, the address of the recipient is stored in the senders local cache (in-memory). Whenever the pod receives a packet in the future, it will first attempt to forward it to the recipient in the cache. If the send for some reason fails, e.g. the pod does not exist anymore or has been blocked by a network policy, the sender will add that container to a "deadpool" list, and not attempt to send packets there again until the setup is restarted.
 
@@ -25,6 +25,14 @@ docker build -t netpong:local .
 ```
 
 change netpong:local to another tag if you want to push to another repository
+
+## Run in local kubernetes cluster
+
+Login / switch context to your local cluster. Then run
+
+```
+kubectl apply -f k8s/netpong.yml
+```
 
 ## Login to GCP
 
