@@ -36,6 +36,8 @@ kubectl apply -f k8s/netpong.yml
 
 ## Login to GCP
 
+Login before running any commands that run against the GCP cluster.
+
 ```
 gcloud auth application-default login
 ```
@@ -74,13 +76,7 @@ Check public IP of ingress controller:
 ```
 kubectl get service ingress-nginx-controller --namespace=ingress-nginx
 ```
-once public IP available, go into k8s folder and create test pods using
-
-```
-kubectl create -f nginx.yml
-```
-
-using the kubeconfig from the terraform folder. This will setup a Nginx ingress and a couple of pods.
+once public IP available, go into k8s folder deploy the defenders.
 
 ## Enable Prisma Cloud integration
 
@@ -88,16 +84,31 @@ Download a DaemonSet from Prisma Cloud Console -> Compute -> Manage -> Deploy ->
 
 kubectl create -f daemonset.yml
 
-## Tear down environment
+you may need to create the twistcli namespace first.
+
+## Deploy netpong to cluster
+
+```
+kubectl create -f netpong.yml
+```
+
+For the image pull to work, you'll need to create a pull secret in the namespace that the netpong deployment is created:
+
+kubectl create secret docker-registry acr-netpong-pull \
+    --namespace=netpong \
+    --docker-server=ltmarvin.azurecr.io \
+    --docker-username=<service-account-id> \
+    --docker-password=<service-account-secret>
+
+The service account must be created first. Use the service_principal.sh script to generate one (note: log in to azure cli first)
+
+
+
+## Tear down environment by destroying the cluster
 
 go to terraform/gcp folder
+```
 terraform destroy
-
+```
 (assumes you've run terraform init/apply from this folder)
 
-to clean up demo app
-kubectl delete -f fanout-ingress.yml
-kubectl delete -f web.yml
-
-to clean up ingress controller:
-kubectl delete all  --all -n ingress-nginx
