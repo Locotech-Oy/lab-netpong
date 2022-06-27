@@ -82,7 +82,7 @@ func main() {
 
 func testLoop(clientset *kubernetes.Clientset, namespacePrefix string) {
 
-	for i := 0; i < 10; i++ {
+	for {
 		log.Debug().Msgf("Waiting %d seconds to start ping test on %s", *pingFrequency, netpongClient.GetWhoamiPod().Status.PodIP)
 		time.Sleep(time.Duration(*pingFrequency) * time.Second)
 
@@ -108,6 +108,7 @@ func testLoop(clientset *kubernetes.Clientset, namespacePrefix string) {
 
 				log.Debug().
 					Str("ip", p.Status.PodIP).
+					Str("namespace", p.Namespace).
 					Msg("Target pod selected")
 				targetPod = &p
 			} else {

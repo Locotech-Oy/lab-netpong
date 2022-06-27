@@ -35,6 +35,7 @@ func Scan(clientset *kubernetes.Clientset, namespacePrefix string) {
 			Str("name", pod.GetName()).
 			Str("ip", pod.Status.PodIP).
 			Str("host", pod.Status.HostIP).
+			Str("namespace", pod.Namespace).
 			Msg("Detected pod")
 	}
 }

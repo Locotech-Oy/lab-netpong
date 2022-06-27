@@ -33,6 +33,7 @@ func Whoami(pods []v1.Pod) (*v1.Pod, error) {
 				Str("name", pod.GetName()).
 				Str("ip", pod.Status.PodIP).
 				Str("host", pod.Status.HostIP).
+				Str("namespace", pod.Namespace).
 				Msg("whoami")
 			return selfPod, nil
 		}
